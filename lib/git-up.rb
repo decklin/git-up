@@ -30,8 +30,11 @@ class GitUp
 
           if base == branch.commit.sha
             puts "fast-forwarding...".yellow
-          else
+          elsif config("auto-rebase")
             puts "rebasing...".yellow
+          else
+            puts "diverged".red
+            next
           end
 
           checkout(branch.name)
