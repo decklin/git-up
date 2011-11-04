@@ -3,10 +3,7 @@ require 'grit'
 
 class GitUp
   def run
-    system('git', 'fetch', '--multiple', *remotes)
-    raise GitError, "`git fetch` failed" unless $? == 0
-    @remote_map = nil # flush cache after fetch
-
+    fetch_remotes
     with_stash do
       returning_to_current_branch do
         col_width = branches.map { |b| b.name.length }.max + 1
@@ -94,6 +91,13 @@ class GitUp
     remote_branch = repo.config["branch.#{branch.name}.merge"] || branch.name
     remote_branch.sub!(%r{^refs/heads/}, '')
     repo.remotes.find { |r| r.name == "#{remote_name}/#{remote_branch}" }
+  end
+
+  def fetch_remotes
+    args = (config("prune") ? ['--prune'] : []) + ['--multiple', *remotes]
+    system('git', 'fetch', *args)
+    raise GitError, "`git fetch` failed" unless $? == 0
+    @remote_map = nil # flush cache after fetch
   end
 
   def with_stash
