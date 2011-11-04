@@ -42,6 +42,7 @@ class GitUp
             next
           end
 
+          log(branch, remote)
           checkout(branch.name)
           rebase(remote)
         end
@@ -143,6 +144,12 @@ class GitUp
 
     unless on_branch?(branch_name)
       raise GitError.new("Failed to checkout #{branch_name}", output)
+    end
+  end
+
+  def log(branch, remote)
+    if log_hook = config("log-hook")
+      system('sh', '-c', log_hook, 'git-up', branch.name, remote.name)
     end
   end
 
