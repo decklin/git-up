@@ -11,6 +11,14 @@ class GitUp
       returning_to_current_branch do
         col_width = branches.map { |b| b.name.length }.max + 1
 
+        branches.sort_by! do |b|
+          case b.name.downcase
+            when 'master', 'oldest'; "__#{b.name.downcase}"
+            when /\//; "_#{b.name.downcase}"
+            else; b.name.downcase
+          end
+        end
+
         branches.each do |branch|
           remote = remote_map[branch.name]
 
