@@ -94,7 +94,9 @@ class GitUp
   end
 
   def fetch_remotes
-    args = (config("prune") ? ['--prune'] : []) + ['--multiple', *remotes]
+    args =
+      (config("prune") ? ['--prune'] : []) +
+      (config("fetch-all") ? ['--all'] : ['--multiple', *remotes])
     system('git', 'fetch', *args)
     raise GitError, "`git fetch` failed" unless $? == 0
     @remote_map = nil # flush cache after fetch
